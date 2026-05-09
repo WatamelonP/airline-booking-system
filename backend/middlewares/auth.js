@@ -31,7 +31,7 @@ module.exports.createAccessToken = (user) => {
 		isAdmin: user.isAdmin
 
 	};
-							//sample expiry time {expiresIn: '1h', '10m', '7d'}
+	//sample expiry time {expiresIn: '1h', '10m', '7d'}
 	return jwt.sign(data, process.env.JWT_SECRET_KEY, {});
 
 }
@@ -44,22 +44,18 @@ Analogy
 - Verify will be used as a middleware in ExpressJS. Functions added as argument in an expressJS route are considered as middleware and is able to receive the request and response objects as well as the next() function. Middlewares will be further elaborated on later sessions.
 */
 module.exports.verify = (req, res, next) => {
-
-	console.log(req.headers.authorization);
-
 	let token = req.headers.authorization;
 
-	if(typeof token === "undefined") {
-		return res.send({ auth: "Failed. No Token"});
+	if (typeof token === "undefined") {
+		return res.send({ auth: "Failed. No Token" });
 	} else {
-		console.log(token);
+
 		//Bearer asdgasd123.ajsdgasd12.asdasdasd
 		token = token.slice(7, token.length);
-		console.log(token);
 		//asdgasd123.ajsdgasd12.asdasdasd
 
 
-		jwt.verify(token, process.env.JWT_SECRET_KEY, function(err, decodedToken) {
+		jwt.verify(token, process.env.JWT_SECRET_KEY, function (err, decodedToken) {
 
 			if (err) {
 				return res.status(403).send({
@@ -68,13 +64,6 @@ module.exports.verify = (req, res, next) => {
 				});
 
 			} else {
-				console.log("result from verify method " + decodedToken);
-				/*
-					id
-					email
-					isAdmin
-				*/
-
 				req.user = decodedToken;
 
 				next();
@@ -90,7 +79,7 @@ module.exports.verifyAdmin = (req, res, next) => {
 
 	console.log("result from verifyAdmin: " + req.user);
 
-	if(req.user.isAdmin) {
+	if (req.user.isAdmin) {
 
 		next();
 	} else {
@@ -118,4 +107,51 @@ module.exports.errorHandler = (err, req, res, next) => {
 			details: err.details || null
 		}
 	})
+}
+
+module.exports.emailValidation = (req, res, next) => {
+
+	const { email } = req.body;
+
+	if (!email) {
+		return res.status(400).send({ message: "Email is required" })
+	}
+
+	const validateEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+	if (!validateEmail.test(email)) {
+		return res.status(400).send({ message: "Invalid Email Format" })
+	}
+
+	next();
+}
+
+module.exports.passwordValidation = (req, res, next) => {
+	const { password } = req.body;
+	const validatePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+	if (!password) {
+		return res.status(404).send({ message: "Password is required" })
+	}
+
+	if (!validatePassword.test(password)) {
+		return res.status(400).send({ message: "Invalid Password Format" })
+	}
+
+	next();
+}
+
+
+module.exports.checkDuplicateEmail = async (req, res, next) => {
+
+	let { email } = req.body;
+
+	const emailExists = await User.findOne({ email });
+
+	if (emailExists) {
+		return res.status(400).send({ message: "Email Already Exists" })
+	}
+
+	next();
+
 }

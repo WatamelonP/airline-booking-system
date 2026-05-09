@@ -18,8 +18,10 @@ const auth = require('../middlewares/auth');
 // Flight Capacity — same idea, if you're tracking passenger count, two simultaneous bookings could both read 49/50 and both push it to 50, resulting in 51 passengers.
 // Payment Processing — a user double-clicking the confirm button could fire two requests, charging them twice.
 
+// important to note:
+// express has this function where if you call next(err), it will skip all the other middlewares and go straight to the error handler(didnt know this until earlier).
 
-module.exports.register = async (req, res) => {
+module.exports.register = async (req, res, next) => {
 
 
         let { firstName, lastName, middleName, email, password, mobileNo } = req.body;
@@ -33,7 +35,7 @@ module.exports.register = async (req, res) => {
 
                 const hashedPassword = await bcrypt.hash(password, 10);
 
-                let newUser = new User({
+                const newUser = new User({
                         firstName,
                         lastName,
                         middleName,
@@ -42,7 +44,7 @@ module.exports.register = async (req, res) => {
                         mobileNo
                 });
 
-                let result = await newUser.save();
+                const result = await newUser.save();
 
                 res.status(201).send({
                         message: "User registered successfully",
@@ -57,12 +59,12 @@ module.exports.register = async (req, res) => {
                 });
 
         } catch (err) {
-                res.status(500).send({ message: "Error in registration", error: err.message });
+                next(err);
         }
 };
 
 
-module.exports.login = async (req, res) => {
+module.exports.login = async (req, res, next) => {
 
         let { email, password } = req.body;
 
@@ -77,7 +79,7 @@ module.exports.login = async (req, res) => {
                 const isPasswordValid = await bcrypt.compare(password, user.password);
 
                 if (!isPasswordValid) {
-                        return res.status(401).send({ message: "Wrong password or Email" })
+                        return res.status(401).send({ message: "Invalid Credentials" })
                 }
 
                 const token = auth.createAccessToken(user);
@@ -86,14 +88,13 @@ module.exports.login = async (req, res) => {
 
 
         } catch (err) {
-
-                return res.status(500).send({ message: "Error in login", error: err.message })
+                next(err);
         }
 
 }
 
 
-module.exports.getProfile = async (req, res) => {
+module.exports.getProfile = async (req, res, next) => {
 
         try {
                 const user = await User.findById(req.user.id);
@@ -115,7 +116,21 @@ module.exports.getProfile = async (req, res) => {
                 })
         }
         catch (err) {
+                next(err);
+        }
+}
 
-                return res.status(500).send({ message: "Error in fetching profile", error: err.message })
+module.exports.getAllUsers = async (req, res, next) => {
+
+        try {
+                const users = await User.find();
+
+                return res.status(200).send({
+                        message: "Users Fetched Successfully",
+                        users
+                })
+        }
+        catch (err) {
+                next(err);
         }
 }

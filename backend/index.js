@@ -5,6 +5,8 @@ const cors = require("cors");
 
 const userRoutes = require("./routes/userRoutes");
 
+const { errorHandler } = require('./middlewares/auth');
+
 // Configurations 
 
 require('dotenv').config();
@@ -29,7 +31,7 @@ mongoose.connection.once('open', () => console.log('Now connected to MongoDB Atl
 // ROUTES 
 
 app.use("/users", userRoutes);
-
+app.use(errorHandler);
 
 if (require.main === module) {
 
