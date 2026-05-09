@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const userRoutes = require("./routes/userRoutes");
+const aircraftRoutes = require("./routes/aircraftRoutes")
+
 
 const { errorHandler } = require('./middlewares/auth');
 
@@ -31,6 +33,7 @@ mongoose.connection.once('open', () => console.log('Now connected to MongoDB Atl
 // ROUTES 
 
 app.use("/users", userRoutes);
+app.use("/aircraft", aircraftRoutes);
 app.use(errorHandler);
 
 if (require.main === module) {
