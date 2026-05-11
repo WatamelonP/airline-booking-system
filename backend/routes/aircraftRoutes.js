@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middlewares/auth');
-const aircraftController = require('../controllers/Aircraft');
+const aircraftController = require('../controllers/aircraftController');
 
 router.post('/create', auth.verify, auth.verifyAdmin, aircraftController.createAircraft);
 router.get('/all', auth.verify, aircraftController.getAllAircrafts);
