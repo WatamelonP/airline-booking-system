@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require('../models/User');
 
 //[SECTION] Environment Setup
 //import our .env for environment variables
