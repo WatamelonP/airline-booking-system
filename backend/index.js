@@ -1,11 +1,15 @@
-// DEPENDENCIES || IMPORTS
+	// DEPENDENCIES || IMPORTS
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
 const userRoutes = require("./routes/userRoutes");
 const aircraftRoutes = require("./routes/aircraftRoutes")
-
+const bookingRoutes = require('./routes/bookingRoutes');
+const flightRoutes = require('./routes/flightRoutes');
+const passengerRoutes = require('./routes/passengerRoutes');
+const seatRoutes = require('./routes/seatRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 const { errorHandler } = require('./middlewares/auth');
 
@@ -34,6 +38,11 @@ mongoose.connection.once('open', () => console.log('Now connected to MongoDB Atl
 
 app.use("/users", userRoutes);
 app.use("/aircraft", aircraftRoutes);
+app.use('/bookings', bookingRoutes);
+app.use('/flights', flightRoutes);	
+app.use('/passengers', passengerRoutes);
+app.use('/seats', seatRoutes);
+app.use('/payments', paymentRoutes);
 app.use(errorHandler);
 
 if (require.main === module) {
