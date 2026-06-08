@@ -4,9 +4,9 @@ const auth = require('../middlewares/auth');
 const userController = require('../controllers/userController');
 
 // RESTful endpoints (aligned with controller names)
-router.post('/', userController.register);                 // register user
+router.post('/register', userController.register);                 // register user
 router.post('/login', userController.login);               // login user
-router.get('/', auth.verify, auth.verifyAdmin, userController.getAllUsers); // get all users
+router.get('/getUsers', auth.verify, auth.verifyAdmin, userController.getAllUsers); // get all users
 router.get('/profile', auth.verify, userController.getProfile);             // get profile of logged-in user
 
 

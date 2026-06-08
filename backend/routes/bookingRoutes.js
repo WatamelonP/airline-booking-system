@@ -7,7 +7,7 @@ const bookingController = require('../controllers/bookingController');
 router.post('/', auth.verify, bookingController.createBooking);
 router.get('/', auth.verify, bookingController.getAllBookings); // admin only
 router.get('/:id', auth.verify, bookingController.getUserBookings);
-router.put('/:id', auth.verify, bookingController.updateBooking); // cancel/update
+router.put('/:id', auth.verify, bookingController.cancelBooking); // cancel
 router.delete('/:id', auth.verify, bookingController.deleteBooking);
 
 module.exports = router;

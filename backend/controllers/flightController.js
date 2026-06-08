@@ -62,7 +62,7 @@ module.exports.createFlight = async (req, res, next) => {
 
 module.exports.getAllFlights = async (req, res, next) => {
   try {
-    const flights = await Flight.find().populate('aircraft');
+    const flights = await Flight.find().populate('aircraftId');
     res.status(200).send({ message: "Flights fetched successfully", flights });
   } catch (err) {
     next(err);
@@ -71,7 +71,7 @@ module.exports.getAllFlights = async (req, res, next) => {
 
 module.exports.getFlight = async (req, res, next) => {
   try {
-    const flight = await Flight.findById(req.params.id).populate('aircraft');
+    const flight = await Flight.findById(req.params.id).populate('aircraftId');
     if (!flight) return res.status(404).send({ message: "Flight not found" });
     res.status(200).send({ message: "Flight fetched successfully", flight });
   } catch (err) {
